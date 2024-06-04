@@ -2,8 +2,8 @@
 
 _pkgname=YAopenvfD
 pkgname=${_pkgname,,}
-pkgver=1.0.1
-pkgrel=3
+pkgver=1.1
+pkgrel=1
 pkgdesc="Yet Another openvfd Daemon"
 arch=('x86_64' 'aarch64')
 url="https://github.com/7Ji/${_pkgname}"
@@ -13,19 +13,16 @@ makedepends=('gcc')
 conflicts=(
   'openvfd-service'
 )
+_conf="etc/conf.d/${_pkgname}"
 backup=(
-  "etc/conf.d/${_pkgname}"
+  "${_conf}"
 )
 _srcname="${_pkgname}-${pkgver}"
 source=(
   "${_srcname}.tar.gz::${url}/archive/refs/tags/v${pkgver}.tar.gz"
-  "${_pkgname}.conf"
-  "${_pkgname}.service"
 )
 sha256sums=(
-  '57597d9888af30447d41dd420382bb7913b73e398134a56e53283f442637d4b4'
-  '7bda38711e099460f301d464d537c1269d7a204c0b305c3c92b1add3d85822ed'
-  '376c0c22e9731b2954db4caca46653d448c17e7fe47d90e99668643e265e04f8'
+  '78dc0bc85ae4e501ab5ee192efeb2c762834f404061e926cebb6581ffb9077f1'
 )
 
 build() {
@@ -34,7 +31,7 @@ build() {
 }
 
 package() {
-  install -Dm755 "${srcdir}/${_srcname}/${_pkgname}" -t "${pkgdir}/usr/bin/"
-  install -Dm644 "${srcdir}/${_pkgname}.service" -t "${pkgdir}/usr/lib/systemd/system/"
-  install -DTm644 "${srcdir}/${_pkgname}.conf" "${pkgdir}/etc/conf.d/${_pkgname}"
+  cd "${srcdir}/${_srcname}"
+  make DESTDIR="${pkgdir}" install
+  install -DTm644 systemd/YAopenvfD.conf "${pkgdir}/${_conf}"
 }
